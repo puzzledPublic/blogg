@@ -15,25 +15,17 @@ exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
   const result = await graphql(`
     query {
-      allPostByCategory: allMarkdownRemark(
-        sort: { fields: frontmatter___date, order: DESC }
-      ) {
+      allPostByCategory: allMarkdownRemark {
         group(field: frontmatter___category) {
           category: fieldValue
           nodes {
-            fields {
-              slug
-            }
-            frontmatter {
-              title
-              date(formatString: "DD MMMM, YYYY")
-            }
-            excerpt
+            id
           }
         }
       }
 
       allMarkdownRemark {
+        totalCount
         edges {
           node {
             fields {
@@ -45,16 +37,41 @@ exports.createPages = async ({ graphql, actions }) => {
     }
   `)
 
+  const postsPerPage = 6;
+
   result.data.allPostByCategory.group.forEach(({category, nodes}) => {
+    const numPages = parseInt(Math.ceil(nodes.length / postsPerPage));
+    Array.from({length: numPages}).forEach((_, i) => {
+      createPage({
+        path: i === 0 ? `/category/${category}` : `/category/${category}/${i + 1}`,
+        component: path.resolve("./src/templates/postListTemplate.jsx"),
+        context: {
+          category: `${category}`,
+          limit: postsPerPage,
+          skip: i * postsPerPage,
+          numPages,
+          currentPage: i + 1,
+        }
+      })
+    });
+  })
+
+  const postTotalCount = result.data.allMarkdownRemark.totalCount;
+  const numPages = parseInt(Math.ceil(postTotalCount / postsPerPage));
+  Array.from({length: numPages - 1}).forEach((_, i) => {
     createPage({
-      path: `/category/${category}`,
+      path: `/category/all/${i + 2}`,
       component: path.resolve("./src/templates/postListTemplate.jsx"),
       context: {
-        category: `${category}`,
-        nodes: nodes,
-      },
-    })
-  })
+        category: "*",
+        limit: postsPerPage,
+        skip: (i + 1) * postsPerPage,
+        numPages,
+        currentPage: i + 2,
+      }
+    });
+  });
+
 
   result.data.allMarkdownRemark.edges.forEach(({ node }) => {
     createPage({

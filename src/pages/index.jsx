@@ -3,14 +3,24 @@ import React from "react"
 import Layout from "../components/layout"
 import Nav from "../components/nav"
 import PostList from "../components/postList"
+import Pagination from "../components/pagination"
 
 export default function Index({ data }) {
-  const { nodes } = data.allMarkdownRemark
+  const { nodes, totalCount } = data.allMarkdownRemark
+  const numPages = parseInt(
+    Math.ceil(totalCount / data.site.siteMetadata.postsPerPage)
+  )
   return (
     <>
       <Layout>
         <Nav />
         <PostList nodes={nodes} />
+        <Pagination
+          firstPageLink={"/"}
+          baseLink={`/category/all`}
+          numPages={numPages}
+          currentPage={1}
+        />
       </Layout>
     </>
   )
@@ -18,7 +28,12 @@ export default function Index({ data }) {
 
 export const query = graphql`
   query {
-    allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
+    allMarkdownRemark(
+      sort: { fields: [frontmatter___date], order: DESC }
+      limit: 6
+      skip: 0
+    ) {
+      totalCount
       nodes {
         frontmatter {
           title
@@ -28,6 +43,11 @@ export const query = graphql`
         fields {
           slug
         }
+      }
+    }
+    site {
+      siteMetadata {
+        postsPerPage
       }
     }
   }

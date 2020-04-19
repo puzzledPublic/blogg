@@ -8,6 +8,7 @@ module.exports = {
   /* Your site config here */
   siteMetadata: {
     title: "Pandas Eating Lots",
+    postsPerPage: 6,
   },
   plugins: [
     {
@@ -19,11 +20,5 @@ module.exports = {
     },
     `gatsby-transformer-remark`,
     `gatsby-plugin-emotion`,
-    // {
-    //   resolve: `gatsby-plugin-typography`,
-    //   options: {
-    //     pathToConfigModule: `src/utils/typography`,
-    //   },
-    // },
-  ]
+  ],
 }

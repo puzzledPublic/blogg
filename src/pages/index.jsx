@@ -13,7 +13,7 @@ export default function Index({ data }) {
   return (
     <>
       <Layout>
-        <Nav />
+        <Nav activeCategory={"all"} />
         <PostList nodes={nodes} />
         <Pagination
           firstPageLink={"/"}

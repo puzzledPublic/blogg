@@ -3,7 +3,7 @@ import tw from "twin.macro"
 import { useStaticQuery, graphql } from "gatsby"
 import CategoryItem from "./categoryItem"
 
-export default function Nav() {
+export default function Nav({ activeCategory }) {
   const data = useStaticQuery(graphql`
     query {
       allMarkdownRemark {
@@ -22,9 +22,15 @@ export default function Nav() {
         <CategoryItem
           totalCount={data.allMarkdownRemark.totalCount}
           category={"all"}
+          active={activeCategory === "all"}
         />
         {data.allMarkdownRemark.group.map(({ totalCount, category }) => (
-          <CategoryItem key={category} totalCount={totalCount} category={category} />
+          <CategoryItem
+            key={category}
+            totalCount={totalCount}
+            category={category}
+            active={activeCategory === category}
+          />
         ))}
       </ul>
     </nav>

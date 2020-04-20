@@ -15,7 +15,7 @@ export default function BlogPostList({ pageContext, data }) {
 
   return (
     <Layout>
-      <Nav />
+      <Nav activeCategory={categoryLink} />
       <PostList nodes={data.allMarkdownRemark.nodes} />
       <Pagination
         firstPageLink={firstPageLink}

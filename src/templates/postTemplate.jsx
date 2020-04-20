@@ -1,11 +1,13 @@
-import React from "react"
-import Layout from "../components/layout"
-import { graphql } from "gatsby"
-import tw from "twin.macro"
 import { css } from "@emotion/core"
+import { graphql } from "gatsby"
+import React from "react"
+import tw from "twin.macro"
+import Layout from "../components/layout"
+import PostFooterButton from "../components/postFooterButton"
 
-export default function BlogPost({ data }) {
+export default function BlogPost({ data, pageContext }) {
   const post = data.markdownRemark
+  const { prevPost, nextPost } = pageContext
   return (
     <Layout>
       <article css={tw`py-4`}>
@@ -23,9 +25,15 @@ export default function BlogPost({ data }) {
             & li {
               list-style-type: disc;
             }
+            padding: 1em 0;
           `}
           dangerouslySetInnerHTML={{ __html: post.html }}
         />
+        <hr />
+        <div css={tw`mb-8 flex justify-between`}>
+          <PostFooterButton direction="prev" postNode={prevPost} />
+          <PostFooterButton direction="next" postNode={nextPost} />
+        </div>
       </article>
     </Layout>
   )

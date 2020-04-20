@@ -6,12 +6,12 @@ export default function PageButton({ disable, link, displayName }) {
   return (
     <li
       style={disable ? { cursor: "not-allowed" } : {}}
-      css={tw`mx-1 px-3 py-2 bg-gray-200 text-gray-700 hover:bg-gray-700 hover:text-gray-200 rounded-lg`}
+      css={tw`mx-1 bg-gray-200 text-gray-700 hover:bg-blue-300 hover:text-gray-100 rounded-lg`}
     >
       {disable ? (
-        <span css={tw`mx-1 font-bold cursor-not-allowed text-gray-500`}>{displayName}</span>
+        <span css={tw`mx-1 inline-flex p-2 justify-center items-center font-bold cursor-not-allowed text-gray-500`}>{displayName}</span>
       ) : (
-        <Link to={link} css={tw`flex items-center font-bold`}>
+        <Link to={link} css={tw`inline-flex p-2 justify-center items-center font-bold`}>
           <span css={tw`mx-1`}>{displayName}</span>
         </Link>
       )}

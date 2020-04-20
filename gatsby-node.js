@@ -24,12 +24,15 @@ exports.createPages = async ({ graphql, actions }) => {
         }
       }
 
-      allMarkdownRemark {
+      allMarkdownRemark(sort: { fields: frontmatter___date, order: ASC }) {
         totalCount
         edges {
           node {
             fields {
               slug
+            }
+            frontmatter {
+              title
             }
           }
         }
@@ -37,13 +40,14 @@ exports.createPages = async ({ graphql, actions }) => {
     }
   `)
 
-  const postsPerPage = 6;
-
-  result.data.allPostByCategory.group.forEach(({category, nodes}) => {
-    const numPages = parseInt(Math.ceil(nodes.length / postsPerPage));
-    Array.from({length: numPages}).forEach((_, i) => {
+  const postsPerPage = 6
+  //카테고리 별 list 생성.
+  result.data.allPostByCategory.group.forEach(({ category, nodes }) => {
+    const numPages = parseInt(Math.ceil(nodes.length / postsPerPage))
+    Array.from({ length: numPages }).forEach((_, i) => {
       createPage({
-        path: i === 0 ? `/category/${category}` : `/category/${category}/${i + 1}`,
+        path:
+          i === 0 ? `/category/${category}` : `/category/${category}/${i + 1}`,
         component: path.resolve("./src/templates/postListTemplate.jsx"),
         context: {
           category: `${category}`,
@@ -51,14 +55,15 @@ exports.createPages = async ({ graphql, actions }) => {
           skip: i * postsPerPage,
           numPages,
           currentPage: i + 1,
-        }
+        },
       })
-    });
+    })
   })
 
-  const postTotalCount = result.data.allMarkdownRemark.totalCount;
-  const numPages = parseInt(Math.ceil(postTotalCount / postsPerPage));
-  Array.from({length: numPages - 1}).forEach((_, i) => {
+  //all list 생성.
+  const postTotalCount = result.data.allMarkdownRemark.totalCount
+  const numPages = parseInt(Math.ceil(postTotalCount / postsPerPage))
+  Array.from({ length: numPages - 1 }).forEach((_, i) => {
     createPage({
       path: `/category/all/${i + 2}`,
       component: path.resolve("./src/templates/postListTemplate.jsx"),
@@ -68,12 +73,13 @@ exports.createPages = async ({ graphql, actions }) => {
         skip: (i + 1) * postsPerPage,
         numPages,
         currentPage: i + 2,
-      }
-    });
-  });
+      },
+    })
+  })
 
-
-  result.data.allMarkdownRemark.edges.forEach(({ node }) => {
+  //모든 post 페이지 생성
+  const posts = result.data.allMarkdownRemark.edges
+  posts.forEach(({ node }, index) => {
     createPage({
       path: `/posts${node.fields.slug}`,
       component: path.resolve("./src/templates/postTemplate.jsx"),
@@ -81,6 +87,8 @@ exports.createPages = async ({ graphql, actions }) => {
         // Data passed to context is available
         // in page queries as GraphQL variables.
         slug: node.fields.slug,
+        prevPost: index === 0 ? null : posts[index - 1].node,
+        nextPost: index === posts.length - 1 ? null : posts[index + 1].node,
       },
     })
   })
